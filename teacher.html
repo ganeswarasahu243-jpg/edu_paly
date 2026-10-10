@@ -9,11 +9,12 @@
     <h2>Teacher Profile Setup</h2>
     <h3 id="hh"></h3>
     <button id="submit-button">get data</button>
+<script src="multilingual/site-i18n.js"></script>
 </body>
 <script>
    document.getElementById('submit-button').addEventListener('click', function() {
 
-    fetch('http://localhost:5000/users')
+    fetch('/users')
         .then(res => res.json())
         .then(users => {
 

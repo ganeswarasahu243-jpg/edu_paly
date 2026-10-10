@@ -405,6 +405,7 @@ tbody tr:last-child td {
   <!-- TAB SWITCHER -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('tab-overview', this)">📊 Class Overview &amp; Roster</button>
+    <button class="tab-btn" onclick="switchTab('tab-exams', this)">📝 Exam Management &amp; Results</button>
     <button class="tab-btn" onclick="switchTab('tab-fractions', this)">🏪 Smart Bazaar &amp; Misconceptions</button>
     <button class="tab-btn" onclick="switchTab('tab-inspector', this)">🔍 Curriculum &amp; Question Inspector</button>
   </div>
@@ -451,6 +452,92 @@ tbody tr:last-child td {
           </thead>
           <tbody id="studentTable">
             <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">Loading student records...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: EXAM MANAGEMENT & RESULTS -->
+  <div id="tab-exams" class="section-panel">
+    <!-- Exam KPI Row -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+      <div style="background: rgba(15, 23, 42, 0.6); padding: 18px; border-radius: 14px; border: 1px solid var(--border);">
+        <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">ACTIVE EXAMS</div>
+        <div id="metricActiveExams" style="font-size: 26px; font-weight: 800; color: #34d399; margin-top: 4px;">0</div>
+      </div>
+      <div style="background: rgba(15, 23, 42, 0.6); padding: 18px; border-radius: 14px; border: 1px solid var(--border);">
+        <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">TOTAL SUBMISSIONS</div>
+        <div id="metricSubmissions" style="font-size: 26px; font-weight: 800; color: #38bdf8; margin-top: 4px;">0</div>
+      </div>
+      <div style="background: rgba(15, 23, 42, 0.6); padding: 18px; border-radius: 14px; border: 1px solid var(--border);">
+        <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">AVG. BATCH SCORE</div>
+        <div id="metricAvgScore" style="font-size: 26px; font-weight: 800; color: #fbbf24; margin-top: 4px;">0%</div>
+      </div>
+      <div style="background: rgba(15, 23, 42, 0.6); padding: 18px; border-radius: 14px; border: 1px solid var(--border);">
+        <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">PASSING RATE</div>
+        <div id="metricPassRate" style="font-size: 26px; font-weight: 800; color: #a5b4fc; margin-top: 4px;">0%</div>
+      </div>
+    </div>
+
+    <!-- Active Exams List -->
+    <div class="panel-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #fff;">📚 Teacher Created Examinations</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">Manage published tests, view student submissions, and export grade sheets</p>
+        </div>
+        <a href="giveexam.html" class="nav-btn primary">➕ Create New Exam</a>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Exam Title</th>
+              <th>Subject</th>
+              <th>Class</th>
+              <th>Duration</th>
+              <th>Questions</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="teacherExamTable">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">Loading exams...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Selected Exam Submissions & Student Results Viewer -->
+    <div class="panel-card" id="submissionSection" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #fff;" id="selectedExamTitle">Student Results</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;" id="selectedExamStats">Performance breakdown and score logs</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button id="exportCsvBtn" class="nav-btn primary" style="background: linear-gradient(135deg, #10b981, #059669);">📥 Export CSV</button>
+          <button onclick="closeSubmissionsView()" class="nav-btn">✕ Close</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Student Name</th>
+              <th>Score</th>
+              <th>Percentage</th>
+              <th>Result</th>
+              <th>Status</th>
+              <th>Submitted At</th>
+            </tr>
+          </thead>
+          <tbody id="examSubmissionsTable">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No submissions yet.</td></tr>
           </tbody>
         </table>
       </div>
@@ -663,7 +750,7 @@ function renderDashboard(data) {
 }
 
 // Fetch Real Backend Data
-fetch(`http://localhost:5000/teacher/dashboard?email=${encodeURIComponent(teacherEmail)}`)
+fetch(`/teacher/dashboard?email=${encodeURIComponent(teacherEmail)}`)
   .then(res => res.json())
   .then(data => {
     renderDashboard(data);
@@ -865,7 +952,166 @@ function exportFractionSummaryCSV() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+// ==========================================
+// TEACHER EXAM MANAGEMENT & MONITORING LOGIC
+// ==========================================
+const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+  ? ''
+  : window.location.origin;
+
+let teacherExamsList = [];
+
+async function loadTeacherExams() {
+  const tbody = document.getElementById("teacherExamTable");
+  if (!tbody) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/exams/active`);
+    if (res.ok) {
+      teacherExamsList = await res.json();
+    }
+  } catch (err) {
+    console.warn("Backend error fetching exams:", err);
+  }
+
+  // Also include localStorage custom exams if any
+  try {
+    const local = JSON.parse(localStorage.getItem("algoplay_custom_exams") || "[]");
+    local.forEach(le => {
+      if (!teacherExamsList.some(e => String(e.id) === String(le.id))) {
+        teacherExamsList.unshift({
+          id: String(le.id),
+          title: le.title,
+          subject: le.subject,
+          duration: le.duration || 25,
+          total_questions: le.questions ? le.questions.length : 5,
+          is_active: true
+        });
+      }
+    });
+  } catch (e) {}
+
+  document.getElementById("metricActiveExams").innerText = teacherExamsList.filter(e => e.is_active).length;
+
+  if (teacherExamsList.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No exams found. Click "Create New Exam" above to publish one.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = teacherExamsList.map(e => `
+    <tr>
+      <td><strong>${e.title}</strong></td>
+      <td>${e.subject || 'General'}</td>
+      <td>${e.class_grade || 'All Grades'}</td>
+      <td>${e.duration || 25} mins</td>
+      <td><strong>${e.total_questions || 5} Qs</strong></td>
+      <td>
+        <span class="badge ${e.is_active ? 'success' : 'danger'}">
+          ${e.is_active ? '● Active' : '● Stopped'}
+        </span>
+      </td>
+      <td>
+        <div style="display: flex; gap: 6px;">
+          <button onclick="viewSubmissions('${e.id}', '${encodeURIComponent(e.title)}')" class="nav-btn primary" style="padding: 5px 10px; font-size: 11px;">
+            📊 Submissions
+          </button>
+          <button onclick="toggleExamActive('${e.id}', ${e.is_active})" class="nav-btn" style="padding: 5px 10px; font-size: 11px;">
+            ${e.is_active ? '⏹️ Stop' : '▶️ Start'}
+          </button>
+          <button onclick="deleteExam('${e.id}')" class="nav-btn danger" style="padding: 5px 10px; font-size: 11px;">
+            🗑️
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+async function toggleExamActive(id, currentState) {
+  const endpoint = currentState ? `${API_BASE}/exam/${id}/stop` : `${API_BASE}/exam/${id}/start`;
+  try {
+    await fetch(endpoint, { method: 'POST' });
+    loadTeacherExams();
+  } catch (e) {
+    alert("Error updating exam status");
+  }
+}
+
+async function deleteExam(id) {
+  if (!confirm("Are you sure you want to delete this exam and all its questions?")) return;
+  try {
+    await fetch(`${API_BASE}/exam/${id}`, { method: 'DELETE' });
+    loadTeacherExams();
+  } catch (e) {
+    alert("Error deleting exam");
+  }
+}
+
+async function viewSubmissions(examId, encodedTitle) {
+  const title = decodeURIComponent(encodedTitle);
+  const sec = document.getElementById("submissionSection");
+  const table = document.getElementById("examSubmissionsTable");
+  document.getElementById("selectedExamTitle").innerText = `Results: ${title}`;
+  sec.style.display = "block";
+  sec.scrollIntoView({ behavior: 'smooth' });
+
+  document.getElementById("exportCsvBtn").onclick = () => {
+    window.location.href = `${API_BASE}/exam/${examId}/export-csv`;
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/exam/${examId}/submissions`);
+    if (res.ok) {
+      const data = await res.json();
+      const subs = data.submissions || [];
+      document.getElementById("metricSubmissions").innerText = data.total_submissions || 0;
+      document.getElementById("metricAvgScore").innerText = `${data.analytics.average_score || 0}`;
+      document.getElementById("metricPassRate").innerText = `${data.analytics.pass_percentage || 0}%`;
+
+      document.getElementById("selectedExamStats").innerText = `Total Submissions: ${data.total_submissions} • Pass Rate: ${data.analytics.pass_percentage}% • Avg: ${data.analytics.average_score}`;
+
+      if (subs.length === 0) {
+        table.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No students have submitted this exam yet.</td></tr>`;
+        return;
+      }
+
+      table.innerHTML = subs.map(s => `
+        <tr>
+          <td><code>${s.student_id}</code></td>
+          <td><strong>${s.student_name}</strong></td>
+          <td><strong>${s.score} / ${s.max_score}</strong></td>
+          <td><strong>${s.percentage}%</strong></td>
+          <td>
+            <span class="badge ${s.passed ? 'success' : 'danger'}">
+              ${s.passed ? 'PASSED' : 'FAILED'}
+            </span>
+          </td>
+          <td>${s.status}</td>
+          <td>${s.submitted_at ? new Date(s.submitted_at).toLocaleTimeString() : '—'}</td>
+        </tr>
+      `).join("");
+    }
+  } catch (err) {
+    table.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">Error loading submissions from backend.</td></tr>`;
+  }
+}
+
+function closeSubmissionsView() {
+  document.getElementById("submissionSection").style.display = "none";
+}
+
+// Auto load teacher exams when switching tabs
+const originalSwitchTab = switchTab;
+switchTab = function(tabId, btn) {
+  originalSwitchTab(tabId, btn);
+  if (tabId === 'tab-exams') {
+    loadTeacherExams();
+  }
+};
+loadTeacherExams();
 </script>
 
+<script src="multilingual/site-i18n.js"></script>
 </body>
 </html>

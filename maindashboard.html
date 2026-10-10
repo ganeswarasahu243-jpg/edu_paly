@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Algoplay — Learn. Play. Level Up.</title>
+<link rel="stylesheet" href="algoplay-chatbot.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='12' fill='%23A64BFF'/%3E%3Ctext x='50%25' y='55%25' font-size='32' text-anchor='middle' fill='%23FFF' font-family='Poppins, sans-serif'%3EA%3C/text%3E%3C/svg%3E">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
@@ -286,7 +287,7 @@ html, body {
     }
 
     // Fetch Assignments
-    fetch("http://localhost:5000/assignments")
+    fetch("/assignments")
       .then(res => res.json())
       .then(data => {
         renderAssignmentsList(data);
@@ -603,5 +604,7 @@ function init() {
 
 window.onload = init;
 </script>
+<script src="algoplay-chatbot.js"></script>
+<script src="multilingual/site-i18n.js"></script>
 </body>
 </html>

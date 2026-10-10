@@ -235,7 +235,7 @@ function loadLoginResource() {
 
   if (localLatest) applyResource(localLatest);
 
-  fetch("http://localhost:5000/assignments")
+  fetch("/assignments")
     .then(res => res.json())
     .then(data => {
       if (data && data.length > 0) {
@@ -246,11 +246,17 @@ function loadLoginResource() {
 }
 loadLoginResource();
 
-function completeLogin(id, name, school) {
+function completeLogin(id, name, school, token) {
     localStorage.setItem("student_id", id);
     localStorage.setItem("student_name", name);
+    if (token) {
+        localStorage.setItem("algoplay_student_token", token);
+    }
     sessionStorage.setItem("student_id", id);
     sessionStorage.setItem("student_name", name);
+    if (token) {
+        sessionStorage.setItem("algoplay_student_token", token);
+    }
     sessionStorage.setItem("profileName", name);
     sessionStorage.setItem("profileSchool", school || "Demo High School");
     sessionStorage.setItem("profileClass", "Class 8");
@@ -262,8 +268,15 @@ function completeLogin(id, name, school) {
     window.location.href = "maindashboard.html";
 }
 
-document.getElementById("demoLoginBtn").addEventListener("click", () => {
-    completeLogin(101, "Demo Learner", "AlgoPlay Academy");
+document.getElementById("demoLoginBtn").addEventListener("click", async () => {
+    try {
+        const response = await fetch("/api/demo-login", { method: "POST" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Demo login failed");
+        completeLogin(data.student.id, data.student.name, data.student.schoolname, data.token);
+    } catch (error) {
+        alert("Demo login is unavailable while the application server is offline.");
+    }
 });
 
 document.getElementById("loginBtn").addEventListener("click", async () => {
@@ -276,7 +289,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     }
 
     try{
-        const res = await fetch("http://localhost:5000/Login",{
+        const res = await fetch("/Login",{
             method:"POST",
             headers:{ "Content-Type":"application/json" },
             body:JSON.stringify({
@@ -293,7 +306,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
             return;
         }
 
-        completeLogin(data.student.id, data.student.name, data.student.schoolname);
+        completeLogin(data.student.id, data.student.name, data.student.schoolname, data.token);
 
     }catch(err){
         console.warn("Backend offline, checking local storage accounts...", err);
@@ -312,5 +325,6 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 });
 </script>
 
+<script src="multilingual/site-i18n.js"></script>
 </body>
 </html>

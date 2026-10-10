@@ -17,7 +17,7 @@ assignmentSchema.methods.toClient = function() {
     filename: this.original_name || this.filename,
     teacher_name: this.teacher_name,
     date: this.timestamp.toISOString().split('T')[0],
-    url: `http://localhost:5000/uploads/${this.filename}`
+    url: `/uploads/${this.filename}`
   };
 };
 

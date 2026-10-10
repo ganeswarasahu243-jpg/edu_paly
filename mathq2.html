@@ -131,7 +131,7 @@ async function sendLevel(level,xp,accuracy){
     timestamp:new Date().toISOString()
   };
   try{
-    const r = await fetch('http://localhost:5000/levelupdate', {
+    const r = await fetch('/levelupdate', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify(payload)
@@ -144,5 +144,6 @@ async function sendLevel(level,xp,accuracy){
 
 function goBack(){ if(confirm('Exit?')) window.location.href='matlevel.html'; }
 </script>
+<script src="multilingual/site-i18n.js"></script>
 </body>
 </html>

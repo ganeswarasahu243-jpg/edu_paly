@@ -172,7 +172,7 @@ function loginTeacher() {
     btn.disabled = true;
     btn.textContent = "Logging in...";
 
-    fetch("http://localhost:5000/TeacherLogin", {
+    fetch("/TeacherLogin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -209,5 +209,6 @@ function loginTeacher() {
 
 
 
+<script src="multilingual/site-i18n.js"></script>
 </body>
 </html>

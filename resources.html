@@ -470,7 +470,7 @@ const dropArea = document.getElementById("dropArea");
 
 // Fetch & render current assignments
 function loadAssignments() {
-  fetch("http://localhost:5000/assignments")
+  fetch("/assignments")
     .then(res => res.json())
     .then(data => renderAssignments(data))
     .catch(() => {
@@ -548,7 +548,7 @@ async function assignWork() {
     formData.append("teacher_name", teacherName);
     if (customTitle) formData.append("title", customTitle);
 
-    const res = await fetch("http://localhost:5000/assign_work", {
+    const res = await fetch("/assign_work", {
       method: "POST",
       body: formData
     });
@@ -563,7 +563,7 @@ async function assignWork() {
         teacher_name: teacherName,
         date: new Date().toISOString().split('T')[0],
         filename: file.name,
-        url: data.assignment ? data.assignment.url : `http://localhost:5000/uploads/${file.name}`
+        url: data.assignment ? data.assignment.url : `/uploads/${file.name}`
       };
       localStorage.setItem('algoplay_latest_assignment', JSON.stringify(assignmentData));
 
@@ -642,5 +642,6 @@ function showStatus(msg, type, isHtml = false) {
 }
 </script>
 
+<script src="multilingual/site-i18n.js"></script>
 </body>
 </html>

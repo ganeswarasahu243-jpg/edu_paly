@@ -88,7 +88,7 @@
       document.getElementById('submit-button').addEventListener('click', function() {
           const name = document.getElementById('name-input').value;
           const email = document.getElementById('email-input').value;
-          fetch('http://localhost:5000/usersadd', {
+          fetch('/usersadd', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ name: name, email: email })
@@ -102,5 +102,6 @@
     </script>
     <script src="lang.js"></script>
 
+<script src="multilingual/site-i18n.js"></script>
 </body>
 </html>

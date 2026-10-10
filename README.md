@@ -61,6 +61,12 @@
 - Socratic learning assistant providing guided hints without giving away final answers.
 - **Bilingual Assistance:** Supports English and regional languages (Telugu) for inclusive learning.
 
+### 🤖 AlgoBuddy AI Tutor (student dashboard)
+- The active student dashboard (`maindashboard.html`) includes a floating AlgoBuddy chat assistant.
+- Gemini requests go through the server-side `POST /api/chat` endpoint; the API key is never sent to the browser.
+- Student sessions use short-lived signed tokens, bounded history, message validation, and per-student rate limiting.
+- Conversations are kept in the browser session only and are isolated by student ID; they are not stored in MongoDB.
+
 ---
 
 ## 👩‍🏫 Educator Hub & Classroom Tools
@@ -278,7 +284,12 @@ PORT=5000
 MONGODB_URI=mongodb://127.0.0.1:27017/algoplay
 UPLOAD_DIR=uploads
 NODE_ENV=development
+AUTH_SECRET=use-a-long-random-secret
+GEMINI_API_KEY=your-new-gemini-api-key
+GEMINI_MODEL=gemini-2.5-flash
 ```
+
+Never commit `.env` or expose `GEMINI_API_KEY` in frontend files. The key previously pasted into chat should be revoked and replaced because it must be treated as compromised.
 
 ### 3. Install Dependencies
 ```bash
@@ -296,6 +307,10 @@ Alternatively, on Windows, double-click **`start.bat`**.
 - **Teacher Assignment Studio:** [http://localhost:5000/resources.html](http://localhost:5000/resources.html)
 - **Student Login:** [http://localhost:5000/Loginpage.html](http://localhost:5000/Loginpage.html)
 - **Teacher Dashboard:** [http://localhost:5000/teacherdash.html](http://localhost:5000/teacherdash.html)
+
+### Render and MongoDB Atlas
+
+The repository includes [`render.yaml`](render.yaml), which uses `npm ci`, starts `server.js` through `npm start`, and checks `/api/health`. In Render, create a Node web service from this repository and set `MONGODB_URI` to a MongoDB Atlas connection string and `GEMINI_API_KEY` to a newly generated key. Keep the generated `AUTH_SECRET` private. In MongoDB Atlas, create a database user with a strong password and add only the Render outbound access permitted by your deployment policy (a temporary `0.0.0.0/0` rule is not recommended for production). Verify the deployed `/api/health` response before testing student login and AlgoBuddy.
 
 ---
 

@@ -281,7 +281,7 @@ document.getElementById("signupBtn").addEventListener("click", async () => {
     };
 
     try {
-        const res = await fetch("http://localhost:5000/Signup", {
+        const res = await fetch("/Signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
@@ -316,5 +316,6 @@ document.getElementById("signupBtn").addEventListener("click", async () => {
 });
 </script>
 
+<script src="multilingual/site-i18n.js"></script>
 </body>
 </html>
