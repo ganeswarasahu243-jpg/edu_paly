@@ -9,7 +9,7 @@
  * - Resilient graceful connection handling (handles offline & active MongoDB instances)
  */
 
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -32,7 +32,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/algoplay';
 const AUTH_SECRET = process.env.AUTH_SECRET || crypto.randomBytes(32).toString('hex');
-const GEMINI_API_KEY = String(process.env.GEMINI_API_KEY || '').trim();
+const configuredGeminiKey = String(process.env.GEMINI_API_KEY || '').trim();
+const GEMINI_API_KEY = /^(replace-with|your[-_])/i.test(configuredGeminiKey)
+  ? ''
+  : configuredGeminiKey;
 const GEMINI_MODEL = String(process.env.GEMINI_MODEL || 'gemini-2.5-flash').trim();
 const MAX_CHAT_MESSAGE_LENGTH = 1200;
 const MAX_CHAT_HISTORY_ITEMS = 10;
@@ -46,7 +49,7 @@ const gemini = GEMINI_API_KEY
 if (!process.env.AUTH_SECRET) {
   console.warn('⚠️ AUTH_SECRET is not configured; student tokens will be invalidated on restart.');
 }
-if (!process.env.GEMINI_API_KEY) {
+if (!GEMINI_API_KEY) {
   console.warn('ℹ️ GEMINI_API_KEY is not configured; /api/chat will return a configuration error.');
 }
 
