@@ -107,6 +107,9 @@
     const dictionary = await response.json();
     applyDictionary(dictionary, selected);
     localStorage.setItem(LANGUAGE_KEY, selected);
+    window.dispatchEvent(new CustomEvent("algoplay:language-requested", {
+      detail: { language: selected }
+    }));
     const select = document.getElementById("languageSelect");
     if (select) select.value = selected;
   }

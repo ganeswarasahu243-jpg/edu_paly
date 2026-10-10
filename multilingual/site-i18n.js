@@ -15,6 +15,7 @@
   let activeLanguage = "en";
   let englishValues = new Map();
   const originalText = new WeakMap();
+  let translationTimer;
 
   function normalize(value) {
     return value.replace(/\s+/g, " ").trim();
@@ -66,6 +67,11 @@
     });
   }
 
+  function translatePage(dictionary) {
+    translateMarkedElements(dictionary);
+    translateKnownText(dictionary);
+  }
+
   function updateLanguageControl() {
     const select = document.querySelector(".algoplay-language-control select, #languageSelect");
     if (select) select.value = activeLanguage;
@@ -76,8 +82,7 @@
     const dictionary = dictionaries[code] || dictionaries.en;
     if (!dictionary) return;
     activeLanguage = dictionaries[code] ? code : "en";
-    translateMarkedElements(dictionary);
-    translateKnownText(dictionary);
+    translatePage(dictionary);
     updateLanguageControl();
     localStorage.setItem(STORAGE_KEY, activeLanguage);
     window.dispatchEvent(new CustomEvent("algoplay:language-changed", {
@@ -87,6 +92,10 @@
 
   function createControl() {
     let select = document.querySelector("#languageSelect");
+    const hasLandingTranslator = Boolean(
+      document.querySelector('script[src*="multilingual/landing-i18n.js"]')
+    );
+    if (select && hasLandingTranslator) return select;
     if (!select) {
       const wrapper = document.createElement("div");
       wrapper.className = "algoplay-language-control";
@@ -117,6 +126,18 @@
     rememberEnglishValues(dictionaries.en);
     createControl();
     applyLanguage(localStorage.getItem(STORAGE_KEY) || "en");
+    const observer = new MutationObserver(() => {
+      window.clearTimeout(translationTimer);
+      translationTimer = window.setTimeout(() => {
+        translatePage(dictionaries[activeLanguage] || dictionaries.en);
+      }, 50);
+    });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-i18n", "data-i18n-placeholder", "data-i18n-title"]
+    });
   }
 
   window.setLanguage = function (language) {
